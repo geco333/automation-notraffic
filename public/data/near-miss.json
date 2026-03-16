@@ -1,0 +1,28 @@
+{
+  "dateTimeRange": "14 Mar 06:00 - 15 Mar 23:59",
+  "nLeg": {
+    "allRoadUsers": 2,
+    "onlyVehicles": 1,
+    "bicycleInvolved": 0,
+    "pedestrianInvolved": 1
+  },
+  "sLeg": {
+    "allRoadUsers": 5,
+    "onlyVehicles": 3,
+    "bicycleInvolved": 1,
+    "pedestrianInvolved": 1
+  },
+  "eLeg": {
+    "allRoadUsers": 1,
+    "onlyVehicles": 1,
+    "bicycleInvolved": 0,
+    "pedestrianInvolved": 0
+  },
+  "wLeg": {
+    "allRoadUsers": 3,
+    "onlyVehicles": 2,
+    "bicycleInvolved": 0,
+    "pedestrianInvolved": 1
+  },
+  "updatedAt": "2026-03-15T12:00:00.000Z"
+}

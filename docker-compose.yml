@@ -1,0 +1,28 @@
+# Traffic Management Platform - Frontend only (for local dev without backend)
+# Full stack: add backend (Django), Redis, PostgreSQL services and use docker-compose.full.yml
+version: "3.8"
+
+services:
+  frontend:
+    build: .
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    # When backend is present, uncomment:
+    # depends_on:
+    #   - backend
+
+  # Placeholder for backend - candidates run Django + Redis + PostgreSQL separately
+  # or use docker-compose up with backend service added:
+  # backend:
+  #   image: traffic-backend:latest
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - REDIS_URL=redis://redis:6379
+  #     - DATABASE_URL=postgres://...
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"

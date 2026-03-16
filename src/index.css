@@ -1,0 +1,989 @@
+:root {
+  --bg: #0f1419;
+  --surface: #1a2332;
+  --border: #2d3a4d;
+  --text: #e6edf3;
+  --muted: #8b9cb3;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --yellow: #d29922;
+  --red: #f85149;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  animation: toast-in 0.25s ease-out;
+}
+
+.toast-success {
+  background: var(--green);
+  color: #fff;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Login */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.login-logo {
+  display: block;
+  max-width: 180px;
+  height: auto;
+  margin: 0 auto 1.25rem;
+}
+
+.login-card h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+}
+
+.login-card .subtitle {
+  color: var(--muted);
+  margin: 0 0 1.5rem;
+  font-size: 0.9rem;
+}
+
+.login-card label {
+  display: block;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.login-card input {
+  display: block;
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.login-card .error {
+  color: var(--red);
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+}
+
+.login-card button {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.login-card button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.login-card .hint {
+  margin: 1rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* Layout */
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.main-nav a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.main-nav a:hover {
+  text-decoration: underline;
+}
+
+.nav-user {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.main-nav button {
+  padding: 0.4rem 0.75rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.main-content {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+/* Dashboard */
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ws-status.connected { color: var(--green); }
+.ws-status.disconnected { color: var(--muted); }
+
+.banner {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.banner.error { background: rgba(248, 81, 73, 0.15); color: var(--red); }
+.banner.info { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
+
+.signals-preview,
+.alerts-preview {
+  margin-bottom: 2rem;
+}
+
+.signals-preview h2,
+.alerts-preview h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+}
+
+.signal-list,
+.alert-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.5rem;
+}
+
+.signal-list li,
+.alert-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.signal-list a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.alert-list .severity-critical { color: var(--red); }
+.alert-list .severity-warning { color: var(--yellow); }
+
+.link { color: var(--accent); font-size: 0.9rem; }
+
+/* Dashboard: mapa grande Google Maps */
+.dashboard-map-section {
+  width: 100%;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.dashboard-map {
+  width: 100%;
+  height: 420px;
+  min-height: 320px;
+  background: var(--surface);
+}
+.dashboard-map-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+.dashboard-map-error p {
+  margin: 0;
+  padding: 1rem;
+}
+
+/* Signals list & detail */
+.signals-page h1,
+.signal-detail h1 {
+  margin: 0 0 1rem;
+}
+
+.signal-detail .back {
+  margin-bottom: 1rem;
+  padding: 0.4rem 0;
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.signal-detail-image-and-params {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin: 1.5rem 0;
+}
+
+.signal-detail .signal-intersection-image {
+  margin: 0;
+  max-width: 100%;
+  flex: 1 1 400px;
+}
+
+.signal-detail .signal-intersection-image img {
+  width: 100%;
+  height: auto;
+  max-width: 800px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+/* Search parameters panel (datepicker) */
+.search-params-panel {
+  flex: 1 1 320px;
+  min-width: 280px;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+}
+
+.search-params-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: lowercase;
+  margin-bottom: 1rem;
+}
+
+.search-params-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.search-params-body-aligned {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.search-params-block-half {
+  flex: 1 1 280px;
+  min-width: 280px;
+}
+
+.search-params-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.search-params-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.search-params-date-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.4rem;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--bg);
+}
+
+.search-params-date-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  position: relative;
+  flex: 1 1 200px;
+  min-width: 180px;
+}
+
+.search-params-field-label {
+  position: absolute;
+  top: -0.6rem;
+  left: 0.75rem;
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--bg);
+  padding: 0 0.25rem;
+}
+
+.search-params-input {
+  padding: 0.5rem 0.6rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+.search-params-input::-webkit-datetime-edit,
+.search-params-input::-webkit-datetime-edit-text {
+  color: var(--text);
+}
+
+.search-params-input:focus {
+  outline: none;
+}
+
+.search-params-input[type="date"],
+.search-params-input[type="time"] {
+  cursor: pointer;
+}
+
+.search-params-time {
+  min-width: 5rem;
+}
+
+.search-params-date-time-split {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.search-params-date-only {
+  min-width: 7.5rem;
+  width: 7.5rem;
+  cursor: pointer;
+}
+.search-params-time-only {
+  min-width: 5rem;
+  width: 5rem;
+  cursor: pointer;
+}
+.search-params-datepicker {
+  min-width: 11rem;
+  cursor: pointer;
+}
+
+/* react-datepicker: visible input (date and time with color and background) */
+.react-datepicker-wrapper { display: block; flex-shrink: 0; }
+.search-params-date-time-split .react-datepicker-wrapper:first-child .react-datepicker__input-container { width: 7.5rem; }
+.search-params-date-time-split .react-datepicker-wrapper:last-child .react-datepicker__input-container { width: 5rem; }
+.react-datepicker__input-container { display: block; width: 100%; }
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.9rem;
+  color: var(--text) !important;
+  background: var(--bg) !important;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.react-datepicker__input-container input::placeholder {
+  color: var(--muted);
+}
+
+/* Popper may render in a portal (outside .signal-detail), so use global rule */
+.react-datepicker-popper {
+  z-index: 1100 !important;
+}
+.react-datepicker-popper[data-placement] {
+  overflow: visible !important;
+}
+/* Prevent popper line-height:0 from collapsing the time list */
+.react-datepicker-popper .react-datepicker--time-only {
+  line-height: 1.5;
+}
+.react-datepicker-popper .react-datepicker--time-only .react-datepicker__time-container,
+.react-datepicker-popper .react-datepicker--time-only .react-datepicker__time-container .react-datepicker__time-box {
+  display: block;
+  line-height: 1.5;
+}
+.signal-detail .react-datepicker-popper {
+  z-index: 1100;
+}
+.signal-detail .react-datepicker-popper[data-placement] {
+  overflow: visible !important;
+}
+
+/* Popup: calendar and time side by side (flex), no clipping */
+.react-datepicker {
+  font-family: inherit;
+  font-size: 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex !important;
+  flex-wrap: nowrap;
+  overflow: visible;
+}
+.react-datepicker__month-container {
+  float: none;
+}
+.react-datepicker__header {
+  background: var(--surface);
+  border-color: var(--border);
+  padding-top: 0.75rem;
+}
+.react-datepicker__current-month { color: var(--text); font-size: 1rem; margin-bottom: 0.5rem; }
+.react-datepicker__day-names { margin-bottom: 0.25rem; }
+.react-datepicker__day-name { color: var(--muted); font-weight: 600; width: 2.25rem; line-height: 2.25rem; margin: 0.2rem; }
+.react-datepicker__day { color: var(--text); width: 2.25rem; line-height: 2.25rem; margin: 0.2rem; }
+.react-datepicker__day:hover { background: var(--border); color: var(--text); border-radius: 4px; }
+.react-datepicker__day--selected { background: var(--accent); border-radius: 4px; }
+.react-datepicker__day--keyboard-selected { background: var(--accent); border-radius: 4px; }
+
+/* Time panel on the right: clickable to select time */
+.react-datepicker__time-container {
+  width: 6rem;
+  min-width: 6rem;
+  border-left: 1px solid var(--border);
+  float: none;
+  flex-shrink: 0;
+}
+.react-datepicker__time-container .react-datepicker__time {
+  background: var(--surface);
+  border-bottom-right-radius: 8px;
+}
+.react-datepicker__time-container .react-datepicker__time-box {
+  width: 100%;
+  background: var(--surface);
+  overflow-x: hidden;
+  text-align: center;
+}
+.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+  height: 195px;
+  overflow-y: scroll;
+  padding-right: 0;
+  padding-left: 0;
+  box-sizing: content-box;
+}
+.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item {
+  color: var(--text);
+  font-size: 0.9rem;
+  padding: 0.4rem 0.5rem;
+  height: 30px;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+}
+.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item:hover {
+  background: var(--border);
+  color: var(--text);
+}
+.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+.react-datepicker-time__header {
+  color: var(--muted) !important;
+  font-size: 0.75rem !important;
+  font-weight: 600;
+  padding: 0.35rem 0.5rem !important;
+  line-height: 1.3;
+}
+
+.react-datepicker__navigation--next--with-time:not(.react-datepicker__navigation--next--with-today-button) {
+  right: 6rem;
+}
+.react-datepicker__navigation-icon::before { border-color: var(--muted); }
+.react-datepicker__navigation:hover *::before { border-color: var(--text); }
+
+/* Time only: clicking the time field opens the time list to choose from */
+.react-datepicker--time-only {
+  display: inline-block;
+  padding: 0;
+  min-width: 5.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  line-height: 1.5;
+}
+.react-datepicker--time-only .react-datepicker__time-container {
+  border-left: none;
+  width: 5.5rem;
+  min-width: 5.5rem;
+}
+.react-datepicker--time-only .react-datepicker__time-container .react-datepicker__time-box {
+  width: 100%;
+}
+.react-datepicker--time-only .react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list {
+  height: 220px;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+.react-datepicker--time-only .react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list li {
+  color: var(--text);
+  padding: 0.4rem 0.5rem;
+  cursor: pointer;
+}
+.react-datepicker--time-only .react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list li:hover {
+  background: var(--border);
+}
+.react-datepicker--time-only .react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected {
+  background: var(--accent);
+  color: #fff;
+}
+/* Ensure the time input is clickable and opens the dropdown */
+.search-params-time-only {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.search-params-date-time-split .react-datepicker-wrapper:last-child {
+  pointer-events: auto;
+}
+
+/* Traffic light configuration (below Search parameters) */
+.traffic-light-config-section {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.traffic-light-config-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 0.75rem;
+}
+.traffic-light-config-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.traffic-light-config-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.traffic-light-config-table th,
+.traffic-light-config-table td {
+  padding: 0.6rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.traffic-light-config-table thead th {
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--bg);
+}
+.traffic-light-config-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.traffic-light-config-th-light {
+  font-weight: 600;
+  min-width: 6rem;
+}
+.traffic-light-config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.traffic-light-config-input {
+  width: 4rem;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.9rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  box-sizing: border-box;
+}
+.traffic-light-config-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.traffic-light-config-save {
+  align-self: flex-start;
+  padding: 0.6rem 1rem;
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.traffic-light-config-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.traffic-light-config-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.signal-detail form label {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.signal-detail form input {
+  margin-left: 0.5rem;
+  padding: 0.5rem;
+  width: 80px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+}
+
+.signal-detail form button {
+  padding: 0.6rem 1rem;
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.signal-detail form button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Download actions below tables, centered */
+.signal-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.btn-download {
+  padding: 0.6rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.btn-download:hover {
+  background: var(--border);
+}
+
+.btn-download.btn-pdf {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.btn-download.btn-pdf:hover {
+  background: rgba(248, 81, 73, 0.15);
+}
+
+.btn-download.btn-csv {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.btn-download.btn-csv:hover {
+  background: rgba(63, 185, 80, 0.15);
+}
+
+/* Row: Search Results + Near-Miss side by side, same width and height */
+.near-miss-tables-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: stretch;
+  margin-top: 2rem;
+}
+
+.near-miss-tables-row .search-results-section,
+.near-miss-tables-row .near-miss-main-section {
+  flex: 1 1 0;
+  min-width: 280px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 0;
+}
+
+.near-miss-tables-row .search-results-section .compare-container,
+.near-miss-tables-row .near-miss-main-section .near-miss-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Same size cards: force equal height of the table area */
+.near-miss-tables-row .near-miss-container .near-miss-table-wrap {
+  flex: 1;
+  min-height: 200px;
+}
+
+/* Search Results & Compare to */
+.search-results-section {
+  max-width: 100%;
+}
+
+.search-results-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+  color: var(--text);
+}
+
+.search-results-section .compare-container {
+  margin-top: 0;
+}
+
+.compare-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+}
+
+.compare-to-label {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.compare-header .near-miss-title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.compare-header .near-miss-date-range,
+.compare-header .near-miss-subtitle {
+  width: 100%;
+}
+
+/* Near-Miss Events by leg table */
+.near-miss-main-section .near-miss-container {
+  margin-top: 0;
+}
+
+.near-miss-container {
+  margin-top: 0;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  max-width: 100%;
+}
+
+.near-miss-header {
+  margin-bottom: 1rem;
+}
+
+.near-miss-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+  color: var(--text);
+}
+
+.near-miss-date-range {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0 0 0.5rem;
+}
+
+.near-miss-subtitle {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.near-miss-subtitle b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.near-miss-legends {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.near-miss-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.near-miss-legend-indicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+}
+
+.near-miss-table-wrap {
+  overflow-x: auto;
+}
+
+.near-miss-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.near-miss-table th {
+  padding-bottom: 0.75rem;
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+.near-miss-table th.near-miss-row-label {
+  width: 60px;
+  text-align: left;
+  padding-right: 0.5rem;
+  padding-top: 0.25rem;
+}
+
+.near-miss-table td {
+  border: 1px solid var(--border);
+  padding: 0;
+  width: 25%;
+  vertical-align: top;
+}
+
+.near-miss-table td.near-miss-cell-first {
+  border-left: none;
+  padding-left: 0.25rem;
+}
+
+.near-miss-table td.near-miss-cell-last {
+  border-right: none;
+  padding-right: 0.25rem;
+}
+
+.near-miss-table tr:first-child td {
+  border-top: none;
+}
+
+.near-miss-cell-inner {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  padding: 0.25rem;
+}
+
+.near-miss-cell-inner.risk-high {
+  background-color: rgb(255, 17, 0);
+  color: #fff;
+}
+
+.near-miss-cell-inner.risk-moderate {
+  background-color: rgb(255, 164, 25);
+  color: #fff;
+}
+
+.near-miss-cell-inner.risk-low {
+  background-color: rgb(255, 214, 0);
+  color: #000;
+}
+
+.near-miss-cell-inner.risk-safe {
+  background-color: rgb(65, 181, 10);
+  color: #fff;
+}
+
+.near-miss-cell-inner.risk-none {
+  background-color: rgb(219, 219, 219);
+  color: #000;
+}

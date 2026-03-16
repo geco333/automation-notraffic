@@ -1,0 +1,57 @@
+{
+  "signals": [
+    {
+      "id": "1",
+      "deviceId": "DEV-001",
+      "name": "Main & 5th",
+      "status": "online",
+      "phase": "green",
+      "cycleSeconds": 90,
+      "lastUpdated": "2025-03-15T12:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "deviceId": "DEV-002",
+      "name": "Oak & 3rd",
+      "status": "online",
+      "phase": "red",
+      "cycleSeconds": 120,
+      "lastUpdated": "2025-03-15T12:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "deviceId": "DEV-003",
+      "name": "Elm & 7th",
+      "status": "maintenance",
+      "phase": "yellow",
+      "cycleSeconds": 60,
+      "lastUpdated": "2025-03-15T11:45:00.000Z"
+    }
+  ],
+  "alerts": [
+    {
+      "id": "1",
+      "deviceId": "DEV-001",
+      "severity": "info",
+      "message": "Cycle completed",
+      "timestamp": "2025-03-15T12:00:00.000Z",
+      "acknowledged": false
+    },
+    {
+      "id": "2",
+      "deviceId": "DEV-002",
+      "severity": "warning",
+      "message": "Phase duration exceeded threshold",
+      "timestamp": "2025-03-15T11:58:00.000Z",
+      "acknowledged": false
+    },
+    {
+      "id": "3",
+      "deviceId": "DEV-003",
+      "severity": "critical",
+      "message": "Device in maintenance mode",
+      "timestamp": "2025-03-15T11:45:00.000Z",
+      "acknowledged": true
+    }
+  ]
+}
