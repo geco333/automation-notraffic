@@ -1,17 +1,13 @@
 import pytest
 import os
-import logging
 import json
+import logging
 from pathlib import Path
 
 from playwright.sync_api import BrowserContext
 
-# Configure logging
+# Configure logging for conftest.py
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.INFO,
-    format="[%(asctime)s)[%(name)s][%(levelname)s] %(message)s"
-)
 
 # Path to store authentication state
 AUTH_STATE_FILE = os.path.join(os.path.dirname(__file__), ".auth", "state.json")
@@ -159,3 +155,4 @@ def page(context: BrowserContext):
 
     yield page
     page.close()
+
