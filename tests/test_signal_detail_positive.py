@@ -21,6 +21,27 @@ from playwright.sync_api import Page, expect
 RUN_ID = str(uuid.uuid4())[:8]
 RUN_TIMESTAMP = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+# Global locators dictionary for easier maintenance and updates
+LOCATORS = {
+    "signal_detail_page": '[data-testid="signal-detail-page"]',
+    "signal_name": '[data-testid="signal-name"]',
+    "signal_status": '[data-testid="signal-status"]',
+    "near_miss_table": '[data-testid="near-miss-table"]',
+    "near_miss_table_cell": '[data-testid="near-miss-table"] .near-miss-cell-inner',
+    "search_results": '[data-testid="search-results"]',
+    "search_results_cell": '[data-testid="search-results"] .near-miss-cell-inner',
+    "download_pdf": '[data-testid="download-pdf"]',
+    "download_csv": '[data-testid="download-csv"]',
+    "signal_cycle_input": '[data-testid="signal-cycle-input"]',
+    "signal_save": '[data-testid="signal-save"]',
+    "toast": '[data-testid="toast"]',
+    "back_button": "button.back",
+    "date_picker": ".search-params-date-only",
+    # API endpoints
+    "api_near_miss": "**/data/near-miss.json*",
+    "api_near_miss_signal_3": "**/data/near-miss.json?signalId=3",
+}
+
 # Expected API response data for signal ID 3
 expected_near_miss_data = {
     "dateTimeRange": "14 Mar 06:00 - 15 Mar 23:59",
@@ -69,10 +90,12 @@ def setup_allure_history():
     # Copy previous history if it exists
     if os.path.exists(previous_history_dir):
         import shutil
+
         try:
             for file_name in os.listdir(previous_history_dir):
                 src_file = os.path.join(previous_history_dir, file_name)
                 dst_file = os.path.join(history_dir, file_name)
+
                 if os.path.isfile(src_file):
                     shutil.copy2(src_file, dst_file)
         except Exception as e:
@@ -101,6 +124,8 @@ def test_positive_page_loads_successfully_for_signal_id_3(page: Page):
 
     with allure.step("Verify page components are visible"):
         expect(page.locator('[data-testid="signal-detail-page"]')).to_be_visible()
+
+    pytest.fail()
 
     with allure.step("Verify signal information displays correctly"):
         expect(page.locator('[data-testid="signal-name"]')).to_have_text("Main & 5th")

@@ -1,9 +1,11 @@
-import pytest
-import os
 import json
 import logging
-from pathlib import Path
+import os
+import uuid
+from datetime import datetime
 
+import allure
+import pytest
 from playwright.sync_api import BrowserContext
 
 # Configure logging for conftest.py
@@ -11,6 +13,10 @@ logger = logging.getLogger(__name__)
 
 # Path to store authentication state
 AUTH_STATE_FILE = os.path.join(os.path.dirname(__file__), ".auth", "state.json")
+
+# Generate unique run ID for this test session
+RUN_ID = str(uuid.uuid4())[:8]
+RUN_TIMESTAMP = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -156,3 +162,69 @@ def page(context: BrowserContext):
     yield page
     page.close()
 
+
+@pytest.fixture(scope="session", autouse=True)
+def create_allure_environment():
+    """
+    Create Allure environment.properties file for each test run.
+    This adds metadata that appears in the Allure report.
+    """
+    env_content = f"""Browser=Chromium
+Platform=Windows
+Test_Run_ID={RUN_ID}
+Timestamp={RUN_TIMESTAMP}
+Test_Suite=Signal Detail Page Tests
+Environment=Development
+"""
+
+    # Create allure-results directory if it doesn't exist
+    os.makedirs("allure-results", exist_ok=True)
+
+    # Write environment.properties file
+    with open("allure-results/environment.properties", "w") as f:
+        f.write(env_content)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_allure_history():
+    """
+    Set up Allure history by copying previous history data to allure-results.
+    This enables trend analysis and historical comparison in Allure reports.
+    """
+    history_dir = "allure-results/history"
+    previous_history_dir = "allure-report/history"
+
+    # Create history directory if it doesn't exist
+    os.makedirs(history_dir, exist_ok=True)
+
+    # Copy previous history if it exists
+    if os.path.exists(previous_history_dir):
+        import shutil
+
+        try:
+            for file_name in os.listdir(previous_history_dir):
+                src_file = os.path.join(previous_history_dir, file_name)
+                dst_file = os.path.join(history_dir, file_name)
+                if os.path.isfile(src_file):
+                    shutil.copy2(src_file, dst_file)
+        except Exception as e:
+            print(f"Warning: Could not copy history files: {e}")
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+
+    # Check if the test failed during the 'call' phase
+    if report.when == "call" and report.failed:
+        # Access the page fixture from the test item
+        page = item.funcargs.get("page")
+
+        if page:
+            # Take a screenshot
+            screenshot_path = f"failure_{item.nodeid.replace('::', '_').replace('/', '_')}.png"
+            page.screenshot(path=screenshot_path)
+
+            # Optional: Attach to Allure report
+            allure.attach(page.screenshot(), name="failure", attachment_type=allure.attachment_type.PNG)
