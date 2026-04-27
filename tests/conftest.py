@@ -1,17 +1,13 @@
 import pytest
 import os
-import logging
 import json
+import logging
 from pathlib import Path
 
 from playwright.sync_api import BrowserContext
 
-# Configure logging
+# Configure logging for conftest.py
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.INFO,
-    format="[%(asctime)s)[%(name)s][%(levelname)s] %(message)s"
-)
 
 # Path to store authentication state
 AUTH_STATE_FILE = os.path.join(os.path.dirname(__file__), ".auth", "state.json")
@@ -159,3 +155,74 @@ def page(context: BrowserContext):
 
     yield page
     page.close()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_allure_history():
+    """
+    Set up Allure history by copying previous history data to allure-results.
+    This enables trend analysis and historical comparison in Allure reports.
+    """
+    history_dir = "allure-results/history"
+    persistent_history_dir = ".allure-history"
+
+    # Create directories if they don't exist
+    os.makedirs(history_dir, exist_ok=True)
+    os.makedirs(persistent_history_dir, exist_ok=True)
+
+    # Copy previous history from persistent storage to allure-results
+    if os.path.exists(persistent_history_dir):
+        import shutil
+
+        try:
+            for file_name in os.listdir(persistent_history_dir):
+                src_file = os.path.join(persistent_history_dir, file_name)
+                dst_file = os.path.join(history_dir, file_name)
+
+                if os.path.isfile(src_file):
+                    shutil.copy2(src_file, dst_file)
+        except Exception as e:
+            print(f"Warning: Could not copy history files: {e}")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def save_allure_history():
+    """
+    Teardown fixture that automatically saves Allure history after each test session.
+    This enables trend analysis and historical comparison in future Allure reports.
+
+    Runs automatically after all tests in the session have completed.
+    """
+    # This code runs before the test session
+    yield
+
+    # This code runs after the test session (teardown)
+    import shutil
+    from pathlib import Path
+
+    source_history = Path("allure-report/history")
+    persistent_history_dir = ".allure-history"
+
+    logger.info("🔄 Saving Allure test history after test session...")
+
+    # Check if allure-report/history exists
+    if not source_history.exists():
+        logger.warning("No allure-report/history found - no history to save")
+        return
+
+    # Create persistent history directory if it doesn't exist
+    os.makedirs(persistent_history_dir, exist_ok=True)
+
+    # Copy all history files to persistent storage
+    copied_files = 0
+    for history_file in source_history.glob("*"):
+        if history_file.is_file():
+            dst_file = os.path.join(persistent_history_dir, history_file.name)
+            shutil.copy2(history_file, dst_file)
+            copied_files += 1
+
+    if copied_files > 0:
+        logger.info(f"✅ Saved {copied_files} history files to persistent storage")
+        logger.info("📊 Historical trends will be available in next Allure report")
+    else:
+        logger.warning("No history files found to save")
