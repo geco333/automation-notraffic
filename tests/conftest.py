@@ -103,15 +103,17 @@ def browser_context_args(browser_context_args, perform_authentication_first):
 @pytest.fixture(scope="session")
 def launch_args():
     """
-    Configure browser launch arguments with headless mode, slowdown, and window size.
+    Configure browser launch arguments with slowdown and window size.
+    
+    Note: headless/headed mode is configured in pytest.ini [playwright] section.
+    Browser will run in headed mode by default for visibility during testing.
 
     Returns:
-        dict: Browser launch configuration with headed mode enabled
+        dict: Browser launch configuration
     """
     return {
-        "headless": False,
         "slow_mo": 1000,
-        "args": ["--headed", "--start-maximized"],
+        "args": ["--start-maximized"],
     }
 
 

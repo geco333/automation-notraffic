@@ -1,12 +1,11 @@
 """
-Test suite for Signal Detail page functionality.
+Positive test suite for Signal Detail page functionality.
 
-This module contains automated tests for the Signal Detail page (http://localhost:3000/signals/{signalId}).
-Tests cover positive scenarios, negative scenarios, edge cases, API validation, and UI behavior.
+This module contains positive automated tests for the Signal Detail page (http://localhost:3000/signals/{signalId}).
+Tests cover positive scenarios, edge cases, API validation, and UI behavior.
 
 Test categories:
 - Positive tests: Verify expected behavior with valid data
-- Negative tests: Verify behavior with invalid data or error responses
 - Edge case tests: Test boundary conditions and special scenarios
 - Bug tests: Document known bugs (marked as skipped)
 """
@@ -25,22 +24,21 @@ expected_near_miss_data = {
 }
 
 
-
 def test_positive_page_loads_successfully_for_signal_id_3(page: Page):
     """
     Positive test: Verify Signal Detail page loads correctly for signal ID 3.
-    
+
     Validates:
     - Signal detail page component is visible
     - Signal name displays correctly as "Main & 5th"
     - Signal status shows as "online"
     - Signal phase shows as "green"
-    
+
     Args:
         page (Page): Playwright page object for interaction.
     """
     page.goto("/signals/3")
-    
+
     expect(page.locator('[data-testid="signal-detail-page"]')).to_be_visible()
     expect(page.locator('[data-testid="signal-name"]')).to_have_text("Main & 5th")
     expect(page.locator('[data-testid="signal-status"]')).to_contain_text("Status: online")
@@ -73,7 +71,7 @@ def test_positive_api_validation_for_signal_id_3(page: Page):
     page.route("**/data/near-miss.json?signalId=3", handle_route)
     page.goto("/signals/3")
     page.wait_for_load_state("networkidle")
-    
+
     assert api_called is True
     assert response_data == expected_near_miss_data
 
@@ -142,6 +140,7 @@ def test_positive_data_displays_correctly_in_tables(page: Page):
     page.goto("/signals/3")
     # Search Results table (dynamic data)
     expect(page.locator('[data-testid="near-miss-table"] .near-miss-cell-inner').first).to_have_text("2")
+
     # Compare table (hardcoded)
     expect(page.locator('[data-testid="search-results"] .near-miss-cell-inner').first).to_have_text("12")
 
@@ -164,59 +163,6 @@ def test_positive_form_submissions_work(page: Page):
     expect(page.locator('[data-testid="toast"]')).to_be_visible()
 
 
-def test_negative_invalid_signal_id_shows_error(page: Page):
-    """
-    Negative test: Verify application behavior with invalid signal ID.
-
-    Validates:
-    - Application gracefully handles non-existent signal IDs
-    - Falls back to mock data when signal not found
-    - Still displays signal information (in this case, mock data)
-
-    Args:
-        page (Page): Playwright page object for interaction.
-    """
-    page.goto("/signals/999")
-    # App falls back to mock data for invalid IDs, so check for mock signal name
-    expect(page.locator('[data-testid="signal-name"]')).to_have_text("Main & 5th")
-
-
-def test_negative_api_404_fallback(page: Page):
-    """
-    Negative test: Verify application handles API 404 errors gracefully.
-
-    Validates:
-    - Application doesn't crash when API returns 404 status
-    - Fallback to default/mock data occurs
-    - Near-miss table remains visible despite API failure
-
-    Args:
-        page (Page): Playwright page object for interaction.
-    """
-    page.route("**/data/near-miss.json*", lambda route: route.fulfill(status=404))
-    page.goto("/signals/3")
-    # Should fallback to default data, table still visible
-    expect(page.locator('[data-testid="near-miss-table"]')).to_be_visible()
-
-
-def test_negative_invalid_api_response(page: Page):
-    """
-    Negative test: Verify application behavior with malformed API response.
-
-    Validates:
-    - Application handles invalid/malformed JSON response
-    - Missing required data fields causes appropriate error handling
-    - UI elements are hidden when data structure is invalid
-
-    Args:
-        page (Page): Playwright page object for interaction.
-    """
-    page.route("**/data/near-miss.json*", lambda route: route.fulfill(json={"invalid": "data"}))
-    page.goto("/signals/3")
-    # Invalid JSON causes failure, table not shown
-    expect(page.locator('[data-testid="near-miss-table"]')).not_to_be_visible()
-
-
 def test_edge_date_pickers_update(page: Page):
     """
     Edge case test: Verify date picker functionality and value updates.
@@ -233,6 +179,7 @@ def test_edge_date_pickers_update(page: Page):
     page.goto("/signals/3")
     page.click(".search-params-date-only")  # Open date picker
     page.click("text=15")  # Select date
+
     # Verify value updated (basic check)
     expect(page.locator(".search-params-date-only").first).to_have_value("15/03/2026")
 
@@ -256,5 +203,6 @@ def test_bug_hardcoded_compare_data_inconsistency(page: Page):
         page (Page): Playwright page object for interaction.
     """
     page.goto("/signals/3")
+
     # Would check if compare data matches API, but it's hardcoded
     assert True  # Placeholder
