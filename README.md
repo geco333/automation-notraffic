@@ -79,7 +79,6 @@ Key testing files:
 
 Generated output paths:
 
-- `reports/report.html` - pytest-html output
 - `allure-results/` - Allure raw results
 - `allure-report/` - generated Allure report (when created)
 
