@@ -15,32 +15,13 @@ import allure
 import uuid
 import os
 from datetime import datetime
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page
+
+from tests.pom import SignalDetailPage
 
 # Generate unique run ID for this test session
 RUN_ID = str(uuid.uuid4())[:8]
 RUN_TIMESTAMP = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-# Global locators dictionary for easier maintenance and updates
-LOCATORS = {
-    "signal_detail_page": '[data-testid="signal-detail-page"]',
-    "signal_name": '[data-testid="signal-name"]',
-    "signal_status": '[data-testid="signal-status"]',
-    "near_miss_table": '[data-testid="near-miss-table"]',
-    "near_miss_table_cell": '[data-testid="near-miss-table"] .near-miss-cell-inner',
-    "search_results": '[data-testid="search-results"]',
-    "search_results_cell": '[data-testid="search-results"] .near-miss-cell-inner',
-    "download_pdf": '[data-testid="download-pdf"]',
-    "download_csv": '[data-testid="download-csv"]',
-    "signal_cycle_input": '[data-testid="signal-cycle-input"]',
-    "signal_save": '[data-testid="signal-save"]',
-    "toast": '[data-testid="toast"]',
-    "back_button": "button.back",
-    "date_picker": ".search-params-date-only",
-    # API endpoints
-    "api_near_miss": "**/data/near-miss.json*",
-    "api_near_miss_signal_3": "**/data/near-miss.json?signalId=3",
-}
 
 # Expected API response data for signal ID 3
 expected_near_miss_data = {
@@ -119,18 +100,18 @@ def test_positive_page_loads_successfully_for_signal_id_3(page: Page):
     Args:
         page (Page): Playwright page object for interaction.
     """
+    signal_detail_page = SignalDetailPage(page)
+
     with allure.step("Navigate to Signal Detail page for ID 3"):
-        page.goto("/signals/3")
+        signal_detail_page.open("3")
 
     with allure.step("Verify page components are visible"):
-        expect(page.locator('[data-testid="signal-detail-page"]')).to_be_visible()
-
-    pytest.fail()
+        signal_detail_page.assert_page_visible()
 
     with allure.step("Verify signal information displays correctly"):
-        expect(page.locator('[data-testid="signal-name"]')).to_have_text("Main & 5th")
-        expect(page.locator('[data-testid="signal-status"]')).to_contain_text("Status: online")
-        expect(page.locator('[data-testid="signal-status"]')).to_contain_text("Phase: green")
+        signal_detail_page.assert_signal_name("Main & 5th")
+        signal_detail_page.assert_status_contains("Status: online")
+        signal_detail_page.assert_status_contains("Phase: green")
 
 
 @allure.epic("Signal Detail Page")
@@ -149,6 +130,7 @@ def test_positive_api_validation_for_signal_id_3(page: Page):
     Args:
         page (Page): Playwright page object for interaction.
     """
+    signal_detail_page = SignalDetailPage(page)
     api_called = False
     response_data = None
 
@@ -161,8 +143,8 @@ def test_positive_api_validation_for_signal_id_3(page: Page):
         route.fulfill(response=response)
 
     with allure.step("Set up API interception for signal ID 3"):
-        page.route("**/data/near-miss.json?signalId=3", handle_route)
-        page.goto("/signals/3")
+        signal_detail_page.intercept_near_miss_signal_3(handle_route)
+        signal_detail_page.open("3")
         page.wait_for_load_state("networkidle")
 
     with allure.step("Verify API was called and response matches expected data"):
@@ -176,30 +158,46 @@ def test_positive_api_validation_for_signal_id_3(page: Page):
 @pytest.mark.positive
 def test_positive_api_validation_for_signal_id_1(page: Page):
     """
-    Positive test: Verify API is called with correct signal ID parameter for signal 1.
+    Positive test: Verify API call and payload correctness for signal ID 1.
 
     Validates:
     - API endpoint includes the correct signalId query parameter
     - API request is made when navigating to signal detail page
+    - API payload for signal ID 1 includes required near-miss structure and numeric values
 
     Args:
         page (Page): Playwright page object for interaction.
     """
+    signal_detail_page = SignalDetailPage(page)
     api_url = ""
+    response_data = None
 
     def handle_route(route):
-        nonlocal api_url
+        nonlocal api_url, response_data
 
         api_url = route.request.url
-        route.fulfill(json=expected_near_miss_data)
+        response = route.fetch()
+        response_data = response.json()
+        route.fulfill(response=response)
 
     with allure.step("Set up API interception and navigate to signal ID 1"):
-        page.route("**/data/near-miss.json*", handle_route)
-        page.goto("/signals/1")
+        signal_detail_page.intercept_near_miss(handle_route)
+        signal_detail_page.open("1")
         page.wait_for_load_state("networkidle")
 
     with allure.step("Verify correct signal ID parameter in API request"):
         assert "signalId=1" in api_url
+
+    with allure.step("Verify signal ID 1 response payload structure and value types"):
+        assert response_data is not None
+        required_keys = {"dateTimeRange", "nLeg", "sLeg", "eLeg", "wLeg", "updatedAt"}
+        assert required_keys.issubset(response_data.keys())
+
+        leg_keys = {"allRoadUsers", "onlyVehicles", "bicycleInvolved", "pedestrianInvolved"}
+        for leg in ("nLeg", "sLeg", "eLeg", "wLeg"):
+            assert leg_keys.issubset(response_data[leg].keys())
+            for metric in leg_keys:
+                assert isinstance(response_data[leg][metric], int)
 
 
 @allure.epic("Signal Detail Page")
@@ -221,16 +219,13 @@ def test_positive_ui_elements_are_present(page: Page):
     Args:
         page (Page): Playwright page object for interaction.
     """
+    signal_detail_page = SignalDetailPage(page)
+
     with allure.step("Navigate to Signal Detail page"):
-        page.goto("/signals/3")
+        signal_detail_page.open("3")
 
     with allure.step("Verify all UI elements are visible"):
-        expect(page.locator("button.back")).to_be_visible()
-        expect(page.locator('[data-testid="near-miss-table"]')).to_be_visible()
-        expect(page.locator('[data-testid="search-results"]')).to_be_visible()
-        expect(page.locator('[data-testid="download-pdf"]')).to_be_visible()
-        expect(page.locator('[data-testid="download-csv"]')).to_be_visible()
-        expect(page.locator('[data-testid="signal-cycle-input"]')).to_be_visible()
+        signal_detail_page.assert_core_controls_visible()
 
 
 @allure.epic("Signal Detail Page")
@@ -248,14 +243,16 @@ def test_positive_data_displays_correctly_in_tables(page: Page):
     Args:
         page (Page): Playwright page object for interaction.
     """
+    signal_detail_page = SignalDetailPage(page)
+
     with allure.step("Navigate to Signal Detail page"):
-        page.goto("/signals/3")
+        signal_detail_page.open("3")
 
     with allure.step("Verify dynamic API data in near-miss table"):
-        expect(page.locator('[data-testid="near-miss-table"] .near-miss-cell-inner').first).to_have_text("2")
+        signal_detail_page.assert_near_miss_first_cell_text("2")
 
     with allure.step("Verify hardcoded comparison data in search results table"):
-        expect(page.locator('[data-testid="search-results"] .near-miss-cell-inner').first).to_have_text("12")
+        signal_detail_page.assert_search_results_first_cell_text("12")
 
 
 @allure.epic("Signal Detail Page")
@@ -274,15 +271,17 @@ def test_positive_form_submissions_work(page: Page):
     Args:
         page (Page): Playwright page object for interaction.
     """
+    signal_detail_page = SignalDetailPage(page)
+
     with allure.step("Navigate to Signal Detail page"):
-        page.goto("/signals/3")
+        signal_detail_page.open("3")
 
     with allure.step("Fill and submit signal cycle form"):
-        page.fill('[data-testid="signal-cycle-input"]', "100")
-        page.click('[data-testid="signal-save"]')
+        signal_detail_page.set_cycle_seconds("100")
+        signal_detail_page.save_cycle()
 
     with allure.step("Verify success notification appears"):
-        expect(page.locator('[data-testid="toast"]')).to_be_visible()
+        signal_detail_page.assert_toast_visible()
 
 
 @allure.epic("Signal Detail Page")
@@ -302,15 +301,17 @@ def test_edge_date_pickers_update(page: Page):
     Args:
         page (Page): Playwright page object for interaction.
     """
+    signal_detail_page = SignalDetailPage(page)
+
     with allure.step("Navigate to Signal Detail page"):
-        page.goto("/signals/3")
+        signal_detail_page.open("3")
 
     with allure.step("Open date picker and select date"):
-        page.click(".search-params-date-only")  # Open date picker
-        page.click("text=15")  # Select date
+        signal_detail_page.open_date_picker()
+        signal_detail_page.select_day("15")
 
     with allure.step("Verify selected date value"):
-        expect(page.locator(".search-params-date-only").first).to_have_value("15/03/2026")
+        signal_detail_page.assert_first_date_picker_value("15/03/2026")
 
 
 @allure.epic("Signal Detail Page")
@@ -335,9 +336,12 @@ def test_bug_hardcoded_compare_data_inconsistency(page: Page):
     Args:
         page (Page): Playwright page object for interaction.
     """
-    with allure.step("Navigate to Signal Detail page"):
-        page.goto("/signals/3")
+    signal_detail_page = SignalDetailPage(page)
 
-    with allure.step("Document known bug - hardcoded compare data"):
-        # Would check if compare data matches API, but it's hardcoded
-        assert True  # Placeholder
+    with allure.step("Navigate to Signal Detail page"):
+        signal_detail_page.open("3")
+
+    with allure.step("Validate compare table mirrors near-miss API data (expected behavior)"):
+        near_miss_first_cell = signal_detail_page.get_near_miss_first_cell_text()
+        compare_first_cell = signal_detail_page.get_search_results_first_cell_text()
+        assert compare_first_cell == near_miss_first_cell

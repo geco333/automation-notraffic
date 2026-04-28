@@ -7,7 +7,9 @@ Tests cover negative scenarios and error handling.
 
 import allure
 import pytest
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page
+
+from tests.pom import SignalDetailPage
 
 
 @allure.epic("Signal Detail Page")
@@ -26,12 +28,14 @@ def test_negative_invalid_signal_id_shows_error(page: Page):
     Args:
         page (Page): Playwright page object for interaction.
     """
+    signal_detail_page = SignalDetailPage(page)
+
     with allure.step("Navigate to non-existent signal ID"):
-        page.goto("/signals/999")
+        signal_detail_page.open("999")
 
     with allure.step("Verify fallback to mock data"):
         # App falls back to mock data for invalid IDs, so check for mock signal name
-        expect(page.locator('[data-testid="signal-name"]')).to_have_text("Main & 5th")
+        signal_detail_page.assert_signal_name("Main & 5th")
 
 
 @allure.epic("Signal Detail Page")
@@ -50,15 +54,17 @@ def test_negative_api_404_fallback(page: Page):
     Args:
         page (Page): Playwright page object for interaction.
     """
+    signal_detail_page = SignalDetailPage(page)
+
     with allure.step("Set up API to return 404 error"):
-        page.route("**/data/near-miss.json*", lambda route: route.fulfill(status=404))
+        signal_detail_page.mock_near_miss_404()
 
     with allure.step("Navigate to Signal Detail page"):
-        page.goto("/signals/3")
+        signal_detail_page.open("3")
 
     with allure.step("Verify graceful fallback - table still visible"):
         # Should fallback to default data, table still visible
-        expect(page.locator('[data-testid="near-miss-table"]')).to_be_visible()
+        signal_detail_page.assert_near_miss_table_visible()
 
 
 @allure.epic("Signal Detail Page")
@@ -77,12 +83,14 @@ def test_negative_invalid_api_response(page: Page):
     Args:
         page (Page): Playwright page object for interaction.
     """
+    signal_detail_page = SignalDetailPage(page)
+
     with allure.step("Set up API to return invalid JSON"):
-        page.route("**/data/near-miss.json*", lambda route: route.fulfill(json={"invalid": "data"}))
+        signal_detail_page.mock_near_miss_invalid_json()
 
     with allure.step("Navigate to Signal Detail page"):
-        page.goto("/signals/3")
+        signal_detail_page.open("3")
 
     with allure.step("Verify error handling - table hidden"):
         # Invalid JSON causes failure, table not shown
-        expect(page.locator('[data-testid="near-miss-table"]')).not_to_be_visible()
+        signal_detail_page.assert_near_miss_table_hidden()

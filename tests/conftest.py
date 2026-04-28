@@ -8,6 +8,8 @@ import allure
 import pytest
 from playwright.sync_api import BrowserContext
 
+from tests.pom import DashboardPage, LoginPage
+
 # Configure logging for conftest.py
 logger = logging.getLogger(__name__)
 
@@ -40,13 +42,12 @@ def perform_authentication_first(browser):
     # Create new context and page for authentication
     context = browser.new_context(base_url="http://localhost:3000")
     page = context.new_page()
+    login_page = LoginPage(page)
 
     try:
         # Perform login
-        page.goto("/login")
-        page.fill('[data-testid="login-email"]', "qa@test.com")
-        page.fill('[data-testid="login-password"]', "test1234")
-        page.click('[data-testid="login-submit"]')
+        login_page.open()
+        login_page.login("qa@test.com", "test1234")
         page.wait_for_url("**/dashboard")
 
         logger.info("Login successful")
@@ -150,7 +151,8 @@ def page(context: BrowserContext):
             logger.info("Restored sessionStorage authentication data")
 
     # Navigate to dashboard to verify authentication works
-    page.goto("http://localhost:3000/dashboard")
+    dashboard_page = DashboardPage(page)
+    dashboard_page.open()
     page.wait_for_load_state("networkidle")
 
     # Verify we're authenticated (not on login page)
