@@ -74,8 +74,9 @@ The suite uses the Page Object Model (POM) pattern.
 Key testing files:
 
 - `tests/conftest.py` - Playwright fixtures, one-time auth, context setup, failure screenshots, Allure environment/history setup
-- `tests/test_signal_detail_positive.py` - positive, API, UI, edge, and skipped bug tests
+- `tests/test_signal_detail_positive.py` - positive, API, UI, and skipped bug tests
 - `tests/test_signal_detail_negative.py` - negative/error-handling tests
+- `tests/test_signal_detail_edge.py` - edge-case tests
 
 Generated output paths:
 
