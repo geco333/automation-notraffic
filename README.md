@@ -91,6 +91,13 @@ Generated output paths:
 - Python virtual environment at `.venv` with test dependencies
 - App available at `http://localhost:3000`
 
+### Install Python test dependencies
+
+```bash
+python -m pip install -r requirements.txt
+python -m playwright install
+```
+
 ### Start the app
 
 ```bash

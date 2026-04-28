@@ -11,8 +11,13 @@ npm-debug.log*
 coverage
 .idea
 .vscode
+
 allure-report/
 allure-results/
 .allure-history/
 __pycache__/
 reports/
+tests/.auth/
+
+package-lock.json
+package.json
