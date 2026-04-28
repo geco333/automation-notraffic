@@ -14,3 +14,4 @@ coverage
 allure-report/
 allure-results/
 .allure-history/
+__pycache__/
